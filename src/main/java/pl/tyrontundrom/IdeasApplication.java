@@ -1,7 +1,14 @@
 package pl.tyrontundrom;
 
+import pl.tyrontundrom.handlers.CommandHandler;
+import pl.tyrontundrom.handlers.HelpCommandHandler;
+import pl.tyrontundrom.handlers.QuitCommandHandler;
 import pl.tyrontundrom.input.UserInputCommand;
 import pl.tyrontundrom.input.UserInputManager;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class IdeasApplication {
     public static void main(String[] args) {
@@ -16,10 +23,27 @@ public class IdeasApplication {
 
         UserInputManager userInputManager = new UserInputManager();
 
+        List<CommandHandler> handlerList = new ArrayList<>();
+        handlerList.add(new HelpCommandHandler());
+        handlerList.add(new QuitCommandHandler());
+
+
         while (applicationLoop) {
             try {
                 UserInputCommand userInputCommand = userInputManager.nextCommand();
                 System.out.println(userInputCommand);
+
+                Optional<CommandHandler> currentHandler = Optional.empty();
+                for (CommandHandler handler : handlerList) {
+                    if (handler.supports(userInputCommand.getCommand())) {
+                        currentHandler = Optional.of(handler);
+                        break;
+                    }
+                }
+                currentHandler
+                        .orElseThrow(() -> new IllegalArgumentException("Unknown handler: " + userInputCommand.getCommand()))
+                        .handle(userInputCommand);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
