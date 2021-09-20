@@ -10,6 +10,9 @@ public class HelpCommandHandler extends BaseCommandHandler {
     @Override
     public void handle(UserInputCommand command) {
         System.out.println("help..");
+        System.out.println("Allowed command: help, quit, category, question, answer");
+        System.out.println("Command pattern: <command> <action> <param1> <param2>");
+        System.out.println("Example: category add CategoryName");
     }
 
 

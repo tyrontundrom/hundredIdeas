@@ -44,6 +44,9 @@ public class IdeasApplication {
                         .orElseThrow(() -> new IllegalArgumentException("Unknown handler: " + userInputCommand.getCommand()))
                         .handle(userInputCommand);
 
+            } catch (QuiteIdeasApplicationException e) {
+                System.out.println("Quit...");
+                applicationLoop = false;
             } catch (Exception e) {
                 e.printStackTrace();
             }

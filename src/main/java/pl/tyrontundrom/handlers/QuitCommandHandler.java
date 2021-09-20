@@ -1,5 +1,6 @@
 package pl.tyrontundrom.handlers;
 
+import pl.tyrontundrom.QuiteIdeasApplicationException;
 import pl.tyrontundrom.input.UserInputCommand;
 
 public class QuitCommandHandler extends BaseCommandHandler {
@@ -8,7 +9,7 @@ public class QuitCommandHandler extends BaseCommandHandler {
 
     @Override
     public void handle(UserInputCommand command) {
-        System.out.println("quit..");
+        throw new QuiteIdeasApplicationException();
     }
 
     @Override
