@@ -1,5 +1,6 @@
 package pl.tyrontundrom;
 
+import pl.tyrontundrom.handlers.CategoryCommandHandler;
 import pl.tyrontundrom.handlers.CommandHandler;
 import pl.tyrontundrom.handlers.HelpCommandHandler;
 import pl.tyrontundrom.handlers.QuitCommandHandler;
@@ -26,6 +27,7 @@ public class IdeasApplication {
         List<CommandHandler> handlerList = new ArrayList<>();
         handlerList.add(new HelpCommandHandler());
         handlerList.add(new QuitCommandHandler());
+        handlerList.add(new CategoryCommandHandler());
 
 
         while (applicationLoop) {
