@@ -2,6 +2,7 @@ package pl.tyrontundrom.dao;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import pl.tyrontundrom.model.Answer;
 import pl.tyrontundrom.model.Category;
 import pl.tyrontundrom.model.Question;
 
@@ -10,8 +11,14 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class QuestionDao {
+
+    private static Logger LOG = Logger.getLogger(QuestionDao.class.getName());
 
     private ObjectMapper objectMapper;
 
@@ -26,22 +33,41 @@ public class QuestionDao {
     private List<Question> getQuestions() {
         try {
             return objectMapper.readValue(Files.readString(Paths.get("./questions.txt")), new TypeReference<>() {
-                });
+            });
 
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            LOG.log(Level.WARNING, "Error on getQuestions", e);
+            return new ArrayList<>();
         }
     }
 
     public void add(Question question) {
-        try {
-            List<Question> questions = getQuestions();
-            questions.add(question);
-            Files.writeString(Paths.get("./questions.txt"), objectMapper.writeValueAsString(question));
+        List<Question> questions = getQuestions();
+        questions.add(question);
+        saveQuestions(questions);
 
+    }
+
+    private void saveQuestions(List<Question> questions) {
+        try {
+            Files.writeString(Paths.get("./questions.txt"), objectMapper.writeValueAsString(questions));
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.log(Level.WARNING, "Error on saveQuestions", e);
         }
+    }
+
+    public Optional<Question> findOne(String questionName) {
+        return getQuestions().stream().filter(c -> c.getName().equals(questionName)).findAny();
+    }
+
+    public void addAnswer(Question question, Answer answer) {
+        List<Question> questions = getQuestions();
+        for (Question q : questions) {
+            if (Objects.equals(q.getName(), question.getName())) {
+                q.getAnswers().add(answer);
+            }
+        }
+        saveQuestions(questions);
+
     }
 }

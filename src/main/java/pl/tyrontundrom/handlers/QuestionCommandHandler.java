@@ -4,17 +4,20 @@ import pl.tyrontundrom.dao.CategoryDao;
 import pl.tyrontundrom.dao.QuestionDao;
 import pl.tyrontundrom.input.UserInputCommand;
 import pl.tyrontundrom.model.Category;
+import pl.tyrontundrom.model.Question;
 
 import java.util.List;
 import java.util.logging.Logger;
 
-public class CategoryCommandHandler extends BaseCommandHandler {
+public class QuestionCommandHandler extends BaseCommandHandler {
 
-    private static Logger LOG = Logger.getLogger(CategoryCommandHandler.class.getName());
-    private static final String COMMAND_NAME = "category";
+    private static Logger LOG = Logger.getLogger(QuestionCommandHandler.class.getName());
+    private static final String COMMAND_NAME = "question";
+    private QuestionDao questionDao;
     private CategoryDao categoryDao;
 
-    public CategoryCommandHandler() {
+    public QuestionCommandHandler(){
+        questionDao = new QuestionDao();
         categoryDao = new CategoryDao();
     }
 
@@ -31,21 +34,24 @@ public class CategoryCommandHandler extends BaseCommandHandler {
 
         switch (command.getAction()) {
             case LIST:
-                LOG.info("List of categories...");
+                LOG.info("List of questions...");
                 if (!command.getParam().isEmpty()) {
                     throw new IllegalArgumentException("category list doesn't support any additional params");
                 }
-                List<Category> categories = categoryDao.findAll();
-                categories.forEach(System.out::println);
+                List<Question> questions = questionDao.findAll();
+                questions.forEach(System.out::println);
                 break;
 
             case ADD:
-                LOG.info("Add category");
-                if (command.getParam().size() != 1) {
+                LOG.info("Add question");
+                if (command.getParam().size() != 2) {
                     throw new IllegalArgumentException("wrong command format, check help for more info");
                 }
                 String categoryName = command.getParam().get(0);
-                categoryDao.add(new Category(categoryName));
+                String questionName = command.getParam().get(1);
+                Category category = categoryDao.findOne(categoryName)
+                        .orElseThrow(() -> new IllegalArgumentException("Category not found: " + categoryName));
+                questionDao.add(new Question(questionName, category));
                 break;
 
             default:
